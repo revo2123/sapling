@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 # sapling
-A small and simple Typst library for creating **computer science tree structures**.
+A small and simple Typst library for creating **computer science trees and graphs**.
 
 ## Features
 - **Binary (Search) Trees**
@@ -11,8 +11,10 @@ A small and simple Typst library for creating **computer science tree structures
 - **Heaps** (with optional indices)
 - **Treaps** (with or without parenthesis)
 - **B-Trees** (with anchor modes)
-- Marking and annotating nodes
-- Walkthroughs to show how a tree changes, step by step
+- **Graphs** (undirected, directed, weighted and mixed)
+- **Adjacency matrices and lists**
+- Marking and annotating nodes and edges
+- Walkthroughs to show how a tree or graph changes, step by step
 
 ## Usage
 ```typ
@@ -22,6 +24,7 @@ A small and simple Typst library for creating **computer science tree structures
 #avl-tree(bst-from((5, 3, 8, 1, 4)))
 #heap((9, 7, 8, 3, 4))
 #b-tree(((20,), (5, 10), (25, 30)), slots: 4)
+#graph(("A", "B", "C"), (("A", "B", 3), ("B", "C", 1)), directed: true)
 ```
 
 ## Examples
@@ -95,7 +98,7 @@ A leaf is an array of keys, and an inner node is `(keys, child1, child2, ...)`. 
 ![Marking and annotating nodes example](docs/examples/marking.png)
 
 ### Walkthroughs
-Use `walkthrough` and `snapshot` to go through an entire solution. Each `snapshot` is one labelled state of a tree, and `walkthrough` places them side by side.
+Use `walkthrough` and `snapshot` to go through an entire solution. Each `snapshot` is one labelled state of a tree or graph, and `walkthrough` places them side by side. Use `columns` to continue in a new row after that many snapshots.
 
 ```typ
 #walkthrough(
@@ -106,6 +109,89 @@ Use `walkthrough` and `snapshot` to go through an entire solution. Each `snapsho
 ```
 
 ![Walkthroughs example](docs/examples/walkthrough.png)
+
+### Graphs
+`graph` takes the vertices and the edges. A vertex is a string or an integer, and an edge is `(from, to)`. The vertices are placed on a circle, starting on top and going clockwise.
+
+```typ
+#graph(
+  ("A", "B", "C", "D", "E"),
+  (("A", "B"), ("B", "C"), ("C", "D"), ("D", "E"), ("E", "A"), ("A", "C")),
+)
+```
+
+![Graphs example](docs/examples/graph.png)
+
+### Directed graphs
+Use `directed: true` to draw arrows. A pair of opposite edges curves apart, and a self-loop points away from the centre of the graph.
+
+```typ
+#graph(
+  ("A", "B", "C", "D"),
+  (("A", "B"), ("B", "A"), ("B", "C"), ("C", "D"), ("D", "A"), ("C", "C")),
+  directed: true,
+)
+```
+
+![Directed graphs example](docs/examples/directed-graph.png)
+
+### Weighted graphs
+An edge with a weight is `(from, to, weight)`, and the weight can be any label such as `"2/5"`. A vertex `(id, column, row)` is placed on a grid: columns grow to the right and rows grow downward. Place all vertices or none, and use `dx` and `dy` to set the size of a grid unit.
+
+```typ
+#graph(
+  (("A", 0, 1), ("B", 1, 0), ("C", 1, 2), ("D", 2, 0), ("E", 3, 1)),
+  (("A", "B", 4), ("A", "C", 2), ("B", "C", 1), ("B", "D", 5), ("C", "D", 8), ("C", "E", 10), ("D", "E", 2)),
+)
+```
+
+![Weighted graphs example](docs/examples/weighted-graph.png)
+
+### Marking and annotating graphs
+`marked` (red) and `visited` (blue) highlight vertices. `marked-edges` (red), `visited-edges` (blue) and `faded-edges` (dashed grey) highlight edges, and `path-edges("A", "B", "D")` gives the edges of a path. `extra` annotates vertices, and `labels` changes the text shown in them, for example to math. Both use the vertex as key, quoted for integers: `("1": $v_1$)`.
+
+```typ
+#graph(
+  (("A", 0, 1), ("B", 1, 0), ("C", 1, 2), ("D", 2, 1)),
+  (("A", "B", 1), ("A", "C", 2), ("B", "C", 3), ("B", "D", 4), ("C", "D", 5)),
+  marked: ("D",),
+  visited: ("A", "B"),
+  marked-edges: (("B", "D"),),
+  visited-edges: (("A", "B"),),
+  faded-edges: (("B", "C"),),
+  extra: (A: "start", D: $d = 5$),
+  labels: (D: $t$),
+)
+```
+
+![Marking and annotating graphs example](docs/examples/graph-marking.png)
+
+### Groups
+`groups` fills each array of vertices in its own colour, for example strongly connected components, a colouring, or the sets of a union-find.
+
+```typ
+#graph(
+  (("a", 0, 0), ("b", 1, 0), ("c", 0, 1), ("d", 2, 0), ("e", 3, 0), ("f", 2, 1), ("g", 3, 1)),
+  (("a", "b"), ("b", "c"), ("c", "a"), ("b", "d"), ("d", "e"), ("e", "f"), ("f", "d"), ("f", "g")),
+  directed: true,
+  groups: (("a", "b", "c"), ("d", "e", "f"), ("g",)),
+)
+```
+
+![Groups example](docs/examples/graph-groups.png)
+
+### Adjacency matrices and lists
+`adjacency-matrix` and `adjacency-list` take the same vertices and edges as `graph`, and also `directed` and `labels`. A matrix cell shows the weight of the edge, or 1 if it has none, and `empty` sets the content of the other cells.
+
+```typ
+#let V = ("A", "B", "C")
+#let E = (("A", "B", 3), ("A", "C", 8), ("B", "C", 1))
+
+#adjacency-matrix(V, E, directed: true, empty: $infinity$)
+#adjacency-list(V, E, directed: true)
+```
+
+![Adjacency matrices and lists example](docs/examples/adjacency.png)
 
 ## License
 MIT, see [LICENSE](LICENSE).
