@@ -11,8 +11,8 @@ A small and simple Typst library for creating **computer science trees**.
 - **Heaps**
 - **Treaps**
 - **B-Trees**
-- automatic Algorithms on Trees
-- Marking and annotating nodes and edges
+- automatic algorithms on Trees
+- Marking nodes
 - Walkthroughs to show how a tree changes, step by step
 
 ## Usage

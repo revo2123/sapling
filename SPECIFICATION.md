@@ -133,13 +133,14 @@ Generates a heap, as if the nodes were added to the tree in the given order.
 **Example:** `heap-from((1, 2, 3, 4), (3, 4))`
 
 ## heap
-Generates a heap from the tree given. If `indices` is `0` or `1`, show the array index of each node, starting at that number.
+Generates a heap from the tree given. Does not have to be a valid heap, will mark all nodes that do not conform if `showErrors` is true. If `indices` is `0` or `1`, show the array index of each node, starting at that number.
 ```typ
-#let heap(tree, order: "min", marked: none, indices: none)
+#let heap(tree, order: "min", marked: none, showErrors: true, indices: none)
 ```
 - `tree` (tree, required): `none`, a key (leaf), or `(key, left, right)`, where `left` and `right` are trees
-- `order` ("min"|"max", optional): states whether the tree is meant to be a min-heap or a max-heap; pass the same value to the heap algorithms
-- `marked` (none|int[]|string[], optional): list of all keys whose nodes will be marked
+- `order` ("min"|"max", optional): states whether the tree is meant to be a min-heap (parent ≤ child) or a max-heap (parent ≥ child); used for `showErrors`, pass the same value to the heap algorithms
+- `marked` (none|int[]|string[], optional): list of all keys whose nodes will be marked (different color from `showErrors` markings)
+- `showErrors` (bool, optional): if `true` mark all nodes that violate the heap order given by `order`
 - `indices` (0|1|none, optional): `none` shows no array indices, `0` shows the array index at each node starting at 0, `1` starting at 1
 
 **Edge-Cases:**
@@ -152,9 +153,10 @@ Generates a heap from the tree given. If `indices` is `0` or `1`, show the array
 ## treap-from
 Generates a treap, as if the nodes were added to the tree in the given order.
 ```typ
-#let treap-from(keys, marked: none, parens: false)
+#let treap-from(keys, order: "min", marked: none, parens: false)
 ```
 - `keys` (none|(int,int)[]|(string,string)[], required): list of all `(key,prio)` pairs that end up in the tree
+- `order` ("min"|"max", optional): the priority order, `"min"` puts the smallest priority at the root (parent ≤ child), `"max"` the largest (parent ≥ child)
 - `marked` (none|int[]|string[], optional): list of all keys whose nodes will be marked
 - `parens` (bool, optional): if `true` show nodes as `(1,2)`, if `false` show `1,2` for the nodes
 
@@ -168,9 +170,10 @@ Generates a treap, as if the nodes were added to the tree in the given order.
 ## treap
 Generates a treap from the tree given. Does not have to be a valid treap, will mark all nodes that do not conform if `showErrors` is true.
 ```typ
-#let treap(tree, marked: none, showErrors: true, parens: false)
+#let treap(tree, order: "min", marked: none, showErrors: true, parens: false)
 ```
 - `tree` (tree, required): `none` or `((key, prio), left, right)`, where `left` and `right` are trees
+- `order` ("min"|"max", optional): the priority order the tree is meant to follow, `"min"` (parent ≤ child) or `"max"` (parent ≥ child); used for `showErrors`
 - `marked` (none|int[]|string[], optional): list of all keys whose nodes will be marked (different color from `showErrors` markings)
 - `showErrors` (bool, optional): if `true` mark all nodes that do not conform to treap conditions
 - `parens` (bool, optional): if `true` show nodes as `(1,2)`, if `false` show `1,2` for the nodes
@@ -202,7 +205,7 @@ Generates a B-Tree with the structure given in `tree`, does not have to be a val
 ```typ
 #let b-tree(tree, order, marked: none, showErrors: true)
 ```
-- `tree` (tree, required): `none` or `((keys), left, right)`, where `keys` is a list of keys in the page, `left` and `right` are trees
+- `tree` (tree, required): `none`, a leaf `(keys)`, or `((keys), child1, child2, ...)`, where `keys` is the list of keys in the page and each child is a tree. A page with k keys has k+1 children. A page is an inner page if its first element is an array
 - `order` (int, required): sets the order of the tree (according to Knuth), used to check the nodes if `showErrors` is `true`
 - `marked` (none|int[]|string[], optional): list of all keys whose nodes will be marked (different color from `showErrors` markings)
 - `showErrors` (bool, optional): if `true` mark all nodes that do not conform to b-tree conditions
@@ -210,8 +213,9 @@ Generates a B-Tree with the structure given in `tree`, does not have to be a val
 **Edge-Cases:**
 - `tree` is `none` or `()`: draw only ∅
 - key in `marked` is not in `tree`: ignore marked key
+- inner page does not have exactly k+1 children for k keys: draw as given, mark the page if `showErrors` is `true`
 
-**Example:** `b-tree(((1, 2, 3, 4), none, none), 3, (3, 4), false)`
+**Example:** `b-tree(((20, 40), (5, 10), (25, 30), (45, 50)), 4, (30,), false)`
 
 # Walkthrough
 ## walkthrough
