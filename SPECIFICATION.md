@@ -13,6 +13,10 @@ Description of what it does.
  
 **Example:** `function-name(1, "abc")`
 
+# General Rules
+- Keys within one tree are either all `int` or all `string`. Mixing them is an error (undefined behavior).
+- Keys are unique. Where a list of keys is inserted, the first occurrence is inserted and later duplicates are left out.
+
 # Binary Trees
 ## binary-tree-from
 Generates a binary tree, as if the nodes were added to the tree in the given order.
@@ -40,7 +44,7 @@ Generates a binary tree from the tree given.
 **Edge-Cases:**
 - `tree` is `none` or `()`: draw only ∅
 - duplicate keys: ignore after first insertion
-- key in `marked` is not in `keys`: ignore marked key
+- key in `marked` is not in `tree`: ignore marked key
 
 **Example:** `binary-tree((1, 2, (3, (4, 5, 6), 7)))`
 
@@ -73,7 +77,7 @@ Generates a binary tree from the tree given. Does not have to be a valid binary 
 **Edge-Cases:**
 - `tree` is `none` or `()`: draw only ∅
 - duplicate keys: ignore after first insertion
-- key in `marked` is not in `keys`: ignore marked key
+- key in `marked` is not in `tree`: ignore marked key
 
 **Example:** `bst((1, 2, (3, (4, 5, 6), 7)))`
 
@@ -106,7 +110,7 @@ Generates an AVL-Tree from the tree given. If `showBf` is true, show balance fac
 **Edge-Cases:**
 - `tree` is `none` or `()`: draw only ∅
 - duplicate keys: ignore after first insertion
-- key in `marked` is not in `keys`: ignore marked key
+- key in `marked` is not in `tree`: ignore marked key
 
 **Example:** `avl-tree((1, 2, (3, (4, 5, 6), 7)))`
 
@@ -114,12 +118,12 @@ Generates an AVL-Tree from the tree given. If `showBf` is true, show balance fac
 ## heap-from
 Generates a heap, as if the nodes were added to the tree in the given order.
 ```typ
-#let heap-from(keys, order: "min", marked: none, showIndices: true)
+#let heap-from(keys, order: "min", marked: none, indices: none)
 ```
 - `keys` (none|int[]|string[], required): list of all keys that end up in the tree
 - `order` ("min"|"max", optional): build a min-heap (parent ≤ child) or a max-heap (parent ≥ child)
 - `marked` (none|int[]|string[], optional): list of all keys whose nodes will be marked
-- `showIndices` (bool, optional): shows the array index at each node
+- `indices` (0|1|none, optional): `none` shows no array indices, `0` shows the array index at each node starting at 0, `1` starting at 1
 
 **Edge-Cases:**
 - `keys` is `none` or `()`: draw only ∅
@@ -129,17 +133,18 @@ Generates a heap, as if the nodes were added to the tree in the given order.
 **Example:** `heap-from((1, 2, 3, 4), (3, 4))`
 
 ## heap
-Generates a heap from the tree given. If `showIndices` is true, show the array index of each node.
+Generates a heap from the tree given. If `indices` is `0` or `1`, show the array index of each node, starting at that number.
 ```typ
-#let heap(tree, order: "min", marked: none, showIndices: true)
+#let heap(tree, order: "min", marked: none, indices: none)
 ```
 - `tree` (tree, required): `none`, a key (leaf), or `(key, left, right)`, where `left` and `right` are trees
 - `order` ("min"|"max", optional): states whether the tree is meant to be a min-heap or a max-heap; pass the same value to the heap algorithms
 - `marked` (none|int[]|string[], optional): list of all keys whose nodes will be marked
-- `showIndices` (bool, optional): shows the array index at each node
+- `indices` (0|1|none, optional): `none` shows no array indices, `0` shows the array index at each node starting at 0, `1` starting at 1
 
 **Edge-Cases:**
-- `keys` is `none` or `()`: draw only ∅
+- `tree` is `none` or `()`: draw only ∅
+- key in `marked` is not in `tree`: ignore marked key
 
 **Example:** `heap((1, 2, (3, (4, 5, 6), 7)))`
 
@@ -153,18 +158,26 @@ Generates a treap, as if the nodes were added to the tree in the given order.
 - `marked` (none|int[]|string[], optional): list of all keys whose nodes will be marked
 - `parens` (bool, optional): if `true` show nodes as `(1,2)`, if `false` show `1,2` for the nodes
 
+**Edge-Cases:**
+- `keys` is `none` or `()`: draw only ∅
+- duplicate keys: ignore after first insertion
+- key in `marked` is not in `keys`: ignore marked key
+
+**Example:** `treap-from(((5, 3), (2, 8), (7, 1)), (7,))`
+
 ## treap
 Generates a treap from the tree given. Does not have to be a valid treap, will mark all nodes that do not conform if `showErrors` is true.
 ```typ
-#let treap(tree, marked: none, showErrors: true)
+#let treap(tree, marked: none, showErrors: true, parens: false)
 ```
 - `tree` (tree, required): `none` or `((key, prio), left, right)`, where `left` and `right` are trees
 - `marked` (none|int[]|string[], optional): list of all keys whose nodes will be marked (different color from `showErrors` markings)
 - `showErrors` (bool, optional): if `true` mark all nodes that do not conform to treap conditions
+- `parens` (bool, optional): if `true` show nodes as `(1,2)`, if `false` show `1,2` for the nodes
 
 **Edge-Cases:**
 - `tree` is `none` or `()`: draw only ∅
-- key in `marked` is not in `keys`: ignore marked key
+- key in `marked` is not in `tree`: ignore marked key
 
 **Example:** `treap(((1,2), none, ((3,4), none, none)))`
 
@@ -187,17 +200,18 @@ Generates a B-Tree, as if the nodes were added to the tree in the given order.
 ## b-tree
 Generates a B-Tree with the structure given in `tree`, does not have to be a valid B-Tree. If `showErrors` is `true` mark incorrect nodes.
 ```typ
-#let b-tree(tree, marked: none, showErrors: true)
+#let b-tree(tree, order, marked: none, showErrors: true)
 ```
 - `tree` (tree, required): `none` or `((keys), left, right)`, where `keys` is a list of keys in the page, `left` and `right` are trees
+- `order` (int, required): sets the order of the tree (according to Knuth), used to check the nodes if `showErrors` is `true`
 - `marked` (none|int[]|string[], optional): list of all keys whose nodes will be marked (different color from `showErrors` markings)
 - `showErrors` (bool, optional): if `true` mark all nodes that do not conform to b-tree conditions
 
 **Edge-Cases:**
 - `tree` is `none` or `()`: draw only ∅
-- key in `marked` is not in `keys`: ignore marked key
+- key in `marked` is not in `tree`: ignore marked key
 
-**Example:** `b-tree(((1, 2, 3, 4), none, none), (3, 4), false)`
+**Example:** `b-tree(((1, 2, 3, 4), none, none), 3, (3, 4), false)`
 
 # Walkthrough
 ## walkthrough
@@ -205,7 +219,7 @@ Arranges several trees (or any other content) next to each other to show how a t
 ```typ
 #let walkthrough(..items, columns: auto, arrows: false, gutter: 12pt)
 ```
-- `..items` (content, optional): the pictures, in order; an array (e.g. the result of an algorithm with `steps: true`) can be spread with `..`
+- `..items` (content, optional): the pictures, in order
 - `columns` (auto|int, optional): `auto` puts everything in one row; a number wraps to a new row after that many items
 - `arrows` (bool|content, optional): `true` draws an arrow between consecutive items; content replaces the default arrow (e.g. `$arrow.r.double$`)
 - `gutter` (length, optional): spacing between items
@@ -218,7 +232,7 @@ Arranges several trees (or any other content) next to each other to show how a t
 
 **Example:** `walkthrough(bst-from((2, 1)), bst-from((2, 1, 3)), arrows: true)`
 
-**Example with algorithm steps:** `walkthrough(..down-heap(t, 8, steps: true).map(heap), arrows: true)`
+**Example with algorithms:** `walkthrough(bst(t), bst(rotate-left(t, 1)), arrows: true)`
 
 ## step
 Optional helper: a single labelled picture, a title above any drawn tree (or any content). Only needed for captions in `walkthrough`.
@@ -282,18 +296,15 @@ Double rotation for the left-right case: `rotate-left` at the left child of `x`,
    B   C        A   B
 ```
 ```typ
-#let rotate-left-right(tree, key, steps: false)
+#let rotate-left-right(tree, key)
 ```
 - `tree`, `key`: as above, `key` is the topmost node `x`
-- `steps` (bool, optional): if `true` return `(tree_before, tree_after_first_rotation, tree_after_second_rotation)` instead of only the final tree
 
 **Edge-Cases:**
 - `key` not in `tree`: unchanged
 - `x` has no left child, or the left child has no right child: unchanged
 
 **Example:** `rotate-left-right((3, (1, none, 2), none), 3)` → `(2, 1, 3)`
-
-**Example with steps:** `rotate-left-right((3, (1, none, 2), none), 3, steps: true)` → `((3, (1, none, 2), none), (3, (2, 1, none), none), (2, 1, 3))`
 
 ## rotate-right-left
 Mirror image: `rotate-right` at the right child of `x`, then `rotate-left` at `x`. Requires a right child that itself has a left child. Arguments and edge cases as `rotate-left-right`, with the children swapped.
@@ -307,7 +318,7 @@ Mirror image: `rotate-right` at the right child of `x`, then `rotate-left` at `x
  B   C                C   D
 ```
 ```typ
-#let rotate-right-left(tree, key, steps: false)
+#let rotate-right-left(tree, key)
 ```
 
 **Example:** `rotate-right-left((1, none, (3, 2, none)), 1)` → `(2, 1, 3)`
@@ -318,26 +329,24 @@ Operate on `heap`-style trees. Heaps must be complete trees (filled by level, le
 ## up-heap
 Moves the key at `key` upward (swap with parent) while it violates heap order against its parent.
 ```typ
-#let up-heap(tree, key, order: "min", steps: false)
+#let up-heap(tree, key, order: "min")
 ```
 - `tree` (tree, required): a heap that is valid except possibly at `key`
 - `key` (int|string, required): the node to sift up
 - `order` ("min"|"max", optional): min-heap (parent ≤ child) or max-heap (parent ≥ child); use the same value as for `heap`
-- `steps` (bool, optional): `false` returns the final tree; `true` returns an array with the tree before and after **every swap**
 
 **Edge-Cases:**
 - `tree` is not a complete tree: unchanged
-- `key` not in `tree`: unchanged (`steps: true` → array with the single unchanged tree)
+- `key` not in `tree`: unchanged
 - `key` is the root: unchanged
 - parent already fine: unchanged
-- equal keys: no swap (stops at equality)
 
 **Example:** `up-heap((2, (4, 6, 5), 7), 6)` → `(2, (4, 6, 5), 7)` (unchanged); `up-heap((4, (2, 6, 5), 7), 2)` → `(2, (4, 6, 5), 7)`
 
 ## down-heap
 Moves the key at `key` downward, swapping with the smaller child (min-heap) or larger child (max-heap), until heap order holds or it is a leaf.
 ```typ
-#let down-heap(tree, key, order: "min", steps: false)
+#let down-heap(tree, key, order: "min")
 ```
 Arguments as `up-heap`. `tree` is a heap that is valid except possibly at `key`.
 
@@ -345,9 +354,5 @@ Arguments as `up-heap`. `tree` is a heap that is valid except possibly at `key`.
 - `tree` is not a complete tree: unchanged
 - `key` not in `tree`, or `key` is a leaf: unchanged
 - only one child: compare against that child
-- both children equal: swap with the **left** child
-- equal to the chosen child: no swap
 
 **Example:** `down-heap((8, (3, 6, 5), (2, 9, none)), 8)` → `(2, (3, 6, 5), (8, 9, none))`
-
-**Example with steps:** `down-heap((8, (3, 6, 5), (2, 9, none)), 8, steps: true)` → `((8, (3, 6, 5), (2, 9, none)), (2, (3, 6, 5), (8, 9, none)))`
