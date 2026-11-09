@@ -15,8 +15,12 @@ Description of what it does.
 
 # General Rules
 - Required arguments are positional, optional arguments are always named: `bst-from((1, 2, 3), marked: (3,))`.
-- Keys within one tree are either all `int` or all `string`. Mixing them is an error (undefined behavior).
+- Keys within one tree are either all `int` or all `string`. Mixing them is an error.
+- Invalid arguments (wrong type, unknown values such as `order: "foo"`, mixed key types) raise an error.
 - Strings are compared alphabetically.
+- Functions ending in `-from` (e.g. `bst-from`) insert the given keys one after another into an empty tree, so the tree is always valid, and draw it.
+- Functions without `-from` (e.g. `bst`) draw the tree exactly as given. Invalid nodes are marked if `show-errors` is `true`.
+- All drawing functions return content. The algorithms (rotations, `up-heap`, `down-heap`) take and return tree values, not content.
 - Keys are unique. Where a list of keys is inserted, the first occurrence is inserted and later duplicates are left out.
 
 # Binary Trees
@@ -166,7 +170,7 @@ Generates a treap, as if the nodes were added to the tree in the given order.
 - `keys` is `none` or `()`: draw only ∅
 - duplicate keys: ignore after first insertion
 - key in `marked` is not in `keys`: ignore marked key
-- `prio` is a string with more than one character, or numbers and characters are mixed: error (undefined behavior)
+- `prio` is a string with more than one character, or numbers and characters are mixed: error
 
 **Example:** `treap-from(((5, 3), (2, 8), (7, 1)), marked: (7,))`
 
