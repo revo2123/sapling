@@ -7,10 +7,12 @@
 #let dy = 1cm // vertical distance between levels
 #let pad = 0.1cm // space around the drawing, so strokes are not clipped
 #let font-size = 9pt
+#let note-width = 0.35cm // room right of the rightmost node for its note
 
 // In-order layout: x = position in the in-order sequence, depth = level.
 // A parent always lies between its children and nothing overlaps.
-// Returns the number of nodes, the placed nodes, the edges and the root's x.
+// Returns the number of nodes, the placed nodes (with their subtree), the edges
+// and the root's x.
 #let layout(tree, depth, x0) = {
   if tree == none { return (count: 0, nodes: (), edges: (), x: none) }
   let (key, left, right) = tree
@@ -22,7 +24,7 @@
   if right != none { edges.push(((x, depth), (r.x, depth + 1))) }
   (
     count: l.count + 1 + r.count,
-    nodes: l.nodes + ((key: key, x: x, depth: depth),) + r.nodes,
+    nodes: l.nodes + ((key: key, tree: tree, x: x, depth: depth),) + r.nodes,
     edges: edges,
     x: x,
   )
@@ -30,7 +32,9 @@
 
 // Draws a binary tree in long form. Keys in `marked` get the marked colour,
 // keys in `errors` the error colour (which wins over `marked`).
-#let draw(tree, marked: (), errors: ()) = {
+// `note`, if given, maps a node's subtree to content shown right of the node,
+// always in the marked colour.
+#let draw(tree, marked: (), errors: (), note: none) = {
   if tree == none { return text(size: font-size)[∅] }
 
   let l = layout(tree, 0, 0)
@@ -39,7 +43,7 @@
   let pos((x, depth)) = (pad + radius + x * dx, pad + radius + depth * dy)
 
   block(
-    width: 2 * (pad + radius) + max-x * dx,
+    width: 2 * (pad + radius) + max-x * dx + if note != none { note-width } else { 0pt },
     height: 2 * (pad + radius) + max-depth * dy,
     breakable: false,
     {
@@ -63,6 +67,10 @@
           stroke: stroke,
           align(center + horizon, text(size: font-size)[#n.key]),
         ))
+        if note != none {
+          // vertically centred: the edges leave the node diagonally
+          place(top + left, dx: x + radius + 1.5pt, dy: y - 5pt, text(size: 8pt, fill: colors.marked)[#note(n.tree)])
+        }
       }
     },
   )

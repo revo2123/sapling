@@ -53,6 +53,12 @@
   keys(left) + (key,) + keys(right)
 }
 
+// Height of a tree in long form (counting edges): −1 for the empty tree, 0 for a leaf.
+#let height(tree) = {
+  if tree == none { return -1 }
+  1 + calc.max(height(tree.at(1)), height(tree.at(2)))
+}
+
 // Builds a complete tree from keys in level order:
 // index `i` has its children at `2i + 1` and `2i + 2`.
 #let from-level-order(keys, i: 0) = {

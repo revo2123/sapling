@@ -25,3 +25,16 @@
 #assert-panic(() => bst-from((1, "a")))
 #assert-panic(() => bst-from(5))
 #assert-panic(() => bst(5, show-errors: "yes"))
+
+// avl-tree, avl-tree-from
+#assert-panic(() => avl-tree((1, 2)))
+#assert-panic(() => avl-tree((1, "a", none)))
+#assert-panic(() => avl-tree-from((1, "a")))
+#assert-panic(() => avl-tree-from(5))
+#assert-panic(() => avl-tree(5, show-bf: "yes"))
+#assert-panic(() => avl-tree(5, marked: ("a",)))
+
+// rotations
+#assert-panic(() => rotate-left((1, 2), 1))
+#assert-panic(() => rotate-left((1, 2, 3), "a"))
+#assert-panic(() => rotate-right((1, 2, 3), 1.5))

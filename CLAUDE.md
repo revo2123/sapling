@@ -16,13 +16,14 @@ Keep the API and the code as simple as possible. No style knobs (`dx`, `r`, `fon
 ## File structure (`src/`)
 | File | Purpose | Status |
 |---|---|---|
-| `lib.typ` | only re-exports the public functions | done (binary trees) |
-| `tree.typ` | `normalize`, `keys`, `check-keys`, `as-list`, `from-level-order` | done |
+| `lib.typ` | only re-exports the public functions | done (binary, BST, rotations, AVL) |
+| `tree.typ` | `normalize`, `keys`, `check-keys`, `as-list`, `height`, `from-level-order` | done |
 | `colors.typ` | palette: border/fill, marked (blue), error (red) | done |
-| `draw.typ` | shared layout and renderer for binary-shaped trees; `draw(tree, marked:, errors:)` | done |
+| `draw.typ` | shared layout and renderer for binary-shaped trees; `draw(tree, marked:, errors:, note:)`; `note` maps a node's subtree to content shown right of the node, always in the marked colour | done |
 | `binary.typ` | `binary-tree`, `binary-tree-from`, `bst`, `bst-from` (+ `bst-insert`, `bst-errors`) | done |
-| `rotate.typ` | the four rotations | todo |
-| `avl.typ`, `treap.typ`, `heap.typ` | one file per type (`heap.typ` also converts trees to and from level-order arrays) | todo |
+| `rotate.typ` | the four rotations; node-level `left`, `right`, `left-right`, `right-left` are reused by insertion | done |
+| `avl.typ` | `avl-tree`, `avl-tree-from` (+ `balance`, `symbol`, `unbalanced`, `rebalance`, `avl-insert`) | done |
+| `treap.typ`, `heap.typ` | one file per type (`heap.typ` also converts trees to and from level-order arrays) | todo |
 | `b-tree.typ` | own layout, since nodes hold several keys | todo |
 | `walkthrough.typ` | `walkthrough`, `step` | todo |
 
@@ -32,6 +33,10 @@ Keep the API and the code as simple as possible. No style knobs (`dx`, `r`, `fon
 - `binary-tree` draws duplicate keys as given; only the `-from` functions drop repeated keys.
 - When a node is both marked and an error, the error colour wins.
 - `bst` error rule: a node is an error if it breaks the bounds set by its *valid* ancestors; a wrong node does not tighten the bounds for its subtrees, so only the offending nodes are red, not everything below them.
+- Balance factors use the minus sign `−` (U+2212). Beyond ±2 the sign is repeated (`+++`); every node with |bf| ≥ 2 gets the error colour.
+- `height` counts edges, as formally defined: empty tree −1, leaf 0.
+- `avl-tree` only checks balance (as the spec says), not the BST order.
+- Rotations search the whole tree for `key` (binary trees have no order), so they also work on `binary-tree` input.
 - Errors are passed to `draw` as keys, so in a tree with duplicate keys every node with that key gets the colour.
 
 ## Open spec questions (not decided yet)
@@ -40,9 +45,8 @@ Keep the API and the code as simple as possible. No style knobs (`dx`, `r`, `fon
 - Typst limits how deep function calls can nest, which may matter for degenerate trees (e.g. `bst-from` with sorted keys: works for 60 keys, fails at 100).
 
 ## Tests
-Tytanic (`tt`) with Typst 0.15.1; see `tests/README.md`. Drawing tests are in `tests/<function>/<case>/test.typ`. Exact `assert`/`assert-panic` checks are in `tests/errors` and `tests/internal`; they render blank pages, which is expected.
+Tytanic (`tt`) with Typst 0.15.1; see `tests/README.md`. Drawing tests are in `tests/<function>/<case>/test.typ`. Exact `assert`/`assert-panic` checks are in `tests/errors`, `tests/internal` and `tests/rotate`; they render blank pages, which is expected.
 
 ## Next steps
-1. `rotate.typ`.
-2. `avl`, `treap`, `heap`, `b-tree`, `walkthrough`.
-3. README Usage/Examples, delete `src/old_*.typ`.
+1. `treap`, `heap`, `b-tree`, `walkthrough`.
+2. README Usage/Examples, delete `src/old_*.typ`.
