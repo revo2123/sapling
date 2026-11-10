@@ -18,3 +18,10 @@
 // keys and marked must be arrays or none
 #assert-panic(() => binary-tree-from(5))
 #assert-panic(() => binary-tree(5, marked: 5))
+
+// bst, bst-from
+#assert-panic(() => bst((1, 2)))
+#assert-panic(() => bst((1, "a", none)))
+#assert-panic(() => bst-from((1, "a")))
+#assert-panic(() => bst-from(5))
+#assert-panic(() => bst(5, show-errors: "yes"))
