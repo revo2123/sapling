@@ -34,3 +34,13 @@
 #assert.eq(rotate-left-right((3, none, 4), 3), (3, none, (4, none, none)))
 #assert.eq(rotate-right-left((1, none, (3, none, 4)), 1), (1, none, (3, none, (4, none, none))))
 #assert.eq(rotate-right-left((1, 0, none), 1), (1, (0, none, none), none))
+
+// treaps: the node is found by its key, the priority moves with it
+#assert.eq(
+  rotate-left(((1, 5), none, ((2, 3), none, none)), 1),
+  ((2, 3), ((1, 5), none, none), none),
+)
+#assert.eq(
+  rotate-right-left(((1, 5), none, ((3, 4), ((2, 1), none, none), none)), 1),
+  ((2, 1), ((1, 5), none, none), ((3, 4), none, none)),
+)

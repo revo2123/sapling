@@ -1,6 +1,6 @@
 // Binary trees and binary search trees.
 
-#import "tree.typ": as-list, check-keys, from-level-order, keys, normalize
+#import "tree.typ": as-list, check-keys, from-level-order, key-of, keys, normalize
 #import "draw.typ": draw
 
 // Draws a binary tree exactly as given.
@@ -35,9 +35,11 @@
 // Keys of the nodes that break the BST rule: every key must be greater than
 // all keys in its left subtree and smaller than all keys in its right subtree.
 // `low` and `high` are the bounds set by the ancestors (`none` = no bound).
+// Also works on treaps, using the key of each `(key, prio)` pair.
 #let bst-errors(tree, low: none, high: none) = {
   if tree == none { return () }
-  let (key, left, right) = tree
+  let (value, left, right) = tree
+  let key = key-of(value)
   let wrong = (low != none and key <= low) or (high != none and key >= high)
   // a wrong node does not tighten the bounds, so its subtrees are checked
   // against the valid ancestors only

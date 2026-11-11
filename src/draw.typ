@@ -1,9 +1,11 @@
 // Drawing of binary-shaped trees (binary trees, BSTs, AVL trees, heaps, treaps).
 
 #import "colors.typ": colors
+#import "tree.typ": key-of
 
-#let radius = 0.3cm // node radius
-#let dx = 0.55cm // horizontal distance between in-order neighbours
+#let radius = 0.3cm // node radius (half the height of a pill)
+#let gap = 0.5cm // horizontal space between two nodes on one level
+#let inset = 0.15cm // space left and right of a pill's label
 #let dy = 1cm // vertical distance between levels
 #let pad = 0.1cm // space around the drawing, so strokes are not clipped
 #let font-size = 9pt
@@ -34,44 +36,55 @@
 // keys in `errors` the error colour (which wins over `marked`).
 // `note`, if given, maps a node's subtree to content shown right of the node,
 // always in the marked colour.
-#let draw(tree, marked: (), errors: (), note: none) = {
+// `label`, if given, maps a node's value to its content; the nodes are then
+// pills as wide as the widest label instead of circles.
+#let draw(tree, marked: (), errors: (), note: none, label: none) = {
   if tree == none { return text(size: font-size)[∅] }
 
   let l = layout(tree, 0, 0)
   let max-x = calc.max(..l.nodes.map(n => n.x))
   let max-depth = calc.max(..l.nodes.map(n => n.depth))
-  let pos((x, depth)) = (pad + radius + x * dx, pad + radius + depth * dy)
+  let shown(n) = text(size: font-size, if label == none [#n.key] else { label(n.key) })
 
-  block(
-    width: 2 * (pad + radius) + max-x * dx + if note != none { note-width } else { 0pt },
-    height: 2 * (pad + radius) + max-depth * dy,
-    breakable: false,
-    {
-      // edges first, so the nodes cover their ends
-      for (from, to) in l.edges {
-        place(top + left, line(start: pos(from), end: pos(to), stroke: 0.6pt + colors.border))
-      }
-      for n in l.nodes {
-        let (stroke, fill) = if n.key in errors {
-          (1.3pt + colors.error, colors.error-fill)
-        } else if n.key in marked {
-          (1.3pt + colors.marked, colors.marked-fill)
-        } else {
-          (0.7pt + colors.border, colors.fill)
+  context {
+    let width = if label == none { 2 * radius } else {
+      calc.max(..l.nodes.map(n => measure(shown(n)).width)) + 2 * inset
+    }
+    // two nodes on one level have their common ancestor between them in
+    // in-order, so they are at least 2 dx apart
+    let dx = (width + gap) / 2
+    let pos((x, depth)) = (pad + width / 2 + x * dx, pad + radius + depth * dy)
+
+    block(
+      width: 2 * pad + width + max-x * dx + if note != none { note-width } else { 0pt },
+      height: 2 * (pad + radius) + max-depth * dy,
+      breakable: false,
+      {
+        // edges first, so the nodes cover their ends
+        for (from, to) in l.edges {
+          place(top + left, line(start: pos(from), end: pos(to), stroke: 0.6pt + colors.border))
         }
-        let (x, y) = pos((n.x, n.depth))
-        place(top + left, dx: x - radius, dy: y - radius, circle(
-          radius: radius,
-          inset: 0pt,
-          fill: fill,
-          stroke: stroke,
-          align(center + horizon, text(size: font-size)[#n.key]),
-        ))
-        if note != none {
-          // vertically centred: the edges leave the node diagonally
-          place(top + left, dx: x + radius + 1.5pt, dy: y - 5pt, text(size: 8pt, fill: colors.marked)[#note(n.tree)])
+        for n in l.nodes {
+          let (stroke, fill) = if key-of(n.key) in errors {
+            (1.3pt + colors.error, colors.error-fill)
+          } else if key-of(n.key) in marked {
+            (1.3pt + colors.marked, colors.marked-fill)
+          } else {
+            (0.7pt + colors.border, colors.fill)
+          }
+          let body = align(center + horizon, shown(n))
+          let (x, y) = pos((n.x, n.depth))
+          place(top + left, dx: x - width / 2, dy: y - radius, if label == none {
+            circle(radius: radius, inset: 0pt, fill: fill, stroke: stroke, body)
+          } else {
+            rect(width: width, height: 2 * radius, radius: radius, inset: 0pt, fill: fill, stroke: stroke, body)
+          })
+          if note != none {
+            // vertically centred: the edges leave the node diagonally
+            place(top + left, dx: x + width / 2 + 1.5pt, dy: y - 5pt, text(size: 8pt, fill: colors.marked)[#note(n.tree)])
+          }
         }
-      }
-    },
-  )
+      },
+    )
+  }
 }

@@ -31,19 +31,23 @@
 
 // Converts a tree from user notation to long form.
 // Accepts `none`, `()`, a key (leaf) or `(key, left, right)`.
+// Only the shape is checked here; each caller checks the keys (`check-keys`),
+// since in a treap the key slot holds a `(key, prio)` pair.
 #let normalize(tree) = {
   if tree == none or tree == () { return none }
-  if type(tree) != array {
-    assert(is-key(tree), message: "sapling: keys must be int or string, got " + repr(tree))
-    return (tree, none, none)
-  }
+  if type(tree) != array { return (tree, none, none) }
   assert(
     tree.len() == 3,
     message: "sapling: a node is (key, left, right), got " + repr(tree),
   )
   let (key, left, right) = tree
-  assert(is-key(key), message: "sapling: keys must be int or string, got " + repr(key))
   (key, normalize(left), normalize(right))
+}
+
+// The key of a node's value: the value itself, or the first element of a
+// treap's `(key, prio)` pair.
+#let key-of(value) = {
+  if type(value) == array and value.len() == 2 { value.at(0) } else { value }
 }
 
 // All keys of a tree in long form, in in-order.

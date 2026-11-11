@@ -56,3 +56,19 @@
 #assert.eq((5, 3, 5, 3, 8).fold(none, avl-insert), normalize((5, 3, 8)))
 // insertion that rotates below the root: 10; 5 (2, 7); 20 → insert 1, 0
 #assert.eq((10, 5, 20, 2, 7, 1, 0).fold(none, avl-insert), normalize((5, (1, 0, 2), (10, 7, 20))))
+
+// treap: insertion with rotations, priority errors
+#import "/src/treap.typ": prio-errors, treap-insert
+#let insert-all(pairs, order) = pairs.fold(none, (t, p) => treap-insert(t, p, order))
+#assert.eq(
+  insert-all(((5, 3), (2, 8), (7, 1)), "min"),
+  normalize(((7, 1), ((5, 3), ((2, 8), none, none), none), none)),
+)
+#assert.eq(
+  insert-all(((5, 3), (2, 8), (7, 1)), "max"),
+  normalize(((2, 8), none, ((5, 3), none, ((7, 1), none, none)))),
+)
+#assert.eq(insert-all(((5, 3), (5, 0)), "min"), normalize(((5, 3), none, none)))
+#assert.eq(prio-errors(normalize(((5, 3), ((2, 1), none, none), none)), "min"), (2,))
+#assert.eq(prio-errors(normalize(((5, 3), ((2, 1), none, none), none)), "max"), ())
+#assert.eq(bst-errors(normalize(((5, 1), ((7, 2), none, none), none))), (7,))

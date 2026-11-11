@@ -4,3 +4,4 @@
 #import "binary.typ": binary-tree, binary-tree-from, bst, bst-from
 #import "rotate.typ": rotate-left, rotate-left-right, rotate-right, rotate-right-left
 #import "avl.typ": avl-tree, avl-tree-from
+#import "treap.typ": treap, treap-from

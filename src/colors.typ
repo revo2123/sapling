@@ -9,4 +9,6 @@
   // nodes that break the rules of their tree type (`show-errors`)
   error: rgb("#c0392b"),
   error-fill: rgb("#fdecea"),
+  // priorities in treap nodes (same as the key text for now)
+  priority: black,
 )
