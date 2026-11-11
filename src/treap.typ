@@ -1,19 +1,11 @@
 // Treaps: binary search trees by key whose priorities follow heap order.
 // In long form a node's key slot holds the pair: `((key, prio), left, right)`.
 
-#import "tree.typ": as-list, check-keys, keys, normalize
+#import "tree.typ": above, as-list, check-keys, check-order, keys, normalize, order-errors
 #import "binary.typ": bst-errors
 #import "rotate.typ"
 #import "colors.typ": colors
 #import "draw.typ": draw
-
-#let check-order(order) = assert(
-  order in ("min", "max"),
-  message: "sapling: order must be \"min\" or \"max\", got " + repr(order),
-)
-
-// Whether priority `a` belongs strictly above priority `b`.
-#let above(a, b, order) = if order == "min" { a < b } else { a > b }
 
 // Checks the `(key, prio)` pairs and `marked`: keys as usual, priorities all
 // numbers or all single characters.
@@ -35,17 +27,6 @@
   assert(
     prios.map(p => type(p) == str).dedup().len() <= 1,
     message: "sapling: priorities must be all numbers or all characters, not mixed",
-  )
-}
-
-// Keys of the nodes whose priority breaks the heap order against their parent.
-#let prio-errors(tree, order, parent: none) = {
-  if tree == none { return () }
-  let ((key, prio), left, right) = tree
-  (
-    (if parent != none and above(prio, parent, order) { (key,) } else { () })
-      + prio-errors(left, order, parent: prio)
-      + prio-errors(right, order, parent: prio)
   )
 }
 
@@ -81,7 +62,9 @@
   let tree = normalize(tree)
   let marked = as-list(marked, "marked")
   check-pairs(keys(tree), marked: marked)
-  let errors = if show-errors { bst-errors(tree) + prio-errors(tree, order) } else { () }
+  let errors = if show-errors {
+    bst-errors(tree) + order-errors(tree, order, by: pair => pair.at(1))
+  } else { () }
   let label(((key, prio))) = {
     let pair = [#key,#text(fill: colors.priority)[#prio]]
     if parens [(#pair)] else { pair }

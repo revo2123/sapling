@@ -58,7 +58,7 @@
 #assert.eq((10, 5, 20, 2, 7, 1, 0).fold(none, avl-insert), normalize((5, (1, 0, 2), (10, 7, 20))))
 
 // treap: insertion with rotations, priority errors
-#import "/src/treap.typ": prio-errors, treap-insert
+#import "/src/treap.typ": treap-insert
 #let insert-all(pairs, order) = pairs.fold(none, (t, p) => treap-insert(t, p, order))
 #assert.eq(
   insert-all(((5, 3), (2, 8), (7, 1)), "min"),
@@ -69,6 +69,23 @@
   normalize(((2, 8), none, ((5, 3), none, ((7, 1), none, none)))),
 )
 #assert.eq(insert-all(((5, 3), (5, 0)), "min"), normalize(((5, 3), none, none)))
-#assert.eq(prio-errors(normalize(((5, 3), ((2, 1), none, none), none)), "min"), (2,))
-#assert.eq(prio-errors(normalize(((5, 3), ((2, 1), none, none), none)), "max"), ())
+#import "/src/tree.typ": order-errors
+#let by-prio = pair => pair.at(1)
+#assert.eq(order-errors(normalize(((5, 3), ((2, 1), none, none), none)), "min", by: by-prio), (2,))
+#assert.eq(order-errors(normalize(((5, 3), ((2, 1), none, none), none)), "max", by: by-prio), ())
 #assert.eq(bst-errors(normalize(((5, 1), ((7, 2), none, none), none))), (7,))
+
+// level order: positions, completeness
+#import "/src/tree.typ": positions, to-level-order
+#assert.eq(positions(normalize((1, 2, (3, none, 4)))), ((0, 1), (1, 2), (2, 3), (6, 4)))
+#assert.eq(to-level-order(none), ())
+#assert.eq(to-level-order(normalize((1, (2, 4, 5), 3))), (1, 2, 3, 4, 5))
+#assert.eq(to-level-order(normalize((1, (2, none, 5), 3))), none)
+#assert.eq(to-level-order(normalize((1, 2, (3, 6, none)))), none)
+#assert.eq(to-level-order(from-level-order(range(10))), range(10))
+
+// heap order: each node against its parent
+#assert.eq(order-errors(normalize((1, (3, 5, 9), (2, 8, none))), "min"), ())
+#assert.eq(order-errors(normalize((5, (3, 4, 9), 8)), "min"), (3,))
+#assert.eq(order-errors(normalize((5, (3, 4, 9), 8)), "max"), (4, 9, 8))
+#assert.eq(order-errors(normalize((2, 2, 3)), "min"), ())

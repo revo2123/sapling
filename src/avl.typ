@@ -60,7 +60,7 @@
   let marked = as-list(marked, "marked")
   check-keys(keys(tree) + marked)
   if show-bf {
-    draw(tree, marked: marked, errors: unbalanced(tree), note: n => symbol(balance(n)))
+    draw(tree, marked: marked, errors: unbalanced(tree), note: n => symbol(balance(n.tree)))
   } else {
     draw(tree, marked: marked)
   }

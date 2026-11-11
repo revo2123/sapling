@@ -11,4 +11,6 @@
   error-fill: rgb("#fdecea"),
   // priorities in treap nodes (same as the key text for now)
   priority: black,
+  // array indices next to heap nodes (same as the balance factors for now)
+  index: rgb("#1f6fb2"),
 )

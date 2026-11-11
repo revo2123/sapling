@@ -16,14 +16,15 @@ Keep the API and the code as simple as possible. No style knobs (`dx`, `r`, `fon
 ## File structure (`src/`)
 | File | Purpose | Status |
 |---|---|---|
-| `lib.typ` | only re-exports the public functions | done (binary, BST, rotations, AVL) |
-| `tree.typ` | `normalize`, `keys`, `check-keys`, `as-list`, `height`, `from-level-order` | done |
-| `colors.typ` | palette: border/fill, marked (blue), error (red) | done |
-| `draw.typ` | shared layout and renderer for binary-shaped trees; `draw(tree, marked:, errors:, note:)`; `note` maps a node's subtree to content shown right of the node, always in the marked colour | done |
+| `lib.typ` | only re-exports the public functions | done (binary, BST, rotations, AVL, treap, heap) |
+| `tree.typ` | `normalize`, `key-of`, `keys`, `check-keys`, `as-list`, `height`, `from-level-order`, `positions`, `to-level-order`; heap order for heaps and treaps: `check-order`, `above`, `order-errors` | done |
+| `colors.typ` | palette: border/fill, marked (blue), error (red), treap priority, heap index | done |
+| `draw.typ` | shared layout and renderer for binary-shaped trees; `draw(tree, marked:, errors:, note:, label:)`; `note` maps a placed node (`n.tree`, `n.index` = level-order index) to content shown right of the node, by default in the marked colour; `label` maps a node's value to its content and turns the nodes into pills as wide as the widest label | done |
 | `binary.typ` | `binary-tree`, `binary-tree-from`, `bst`, `bst-from` (+ `bst-insert`, `bst-errors`) | done |
 | `rotate.typ` | the four rotations; node-level `left`, `right`, `left-right`, `right-left` are reused by insertion | done |
 | `avl.typ` | `avl-tree`, `avl-tree-from` (+ `balance`, `symbol`, `unbalanced`, `rebalance`, `avl-insert`) | done |
-| `treap.typ`, `heap.typ` | one file per type (`heap.typ` also converts trees to and from level-order arrays) | todo |
+| `treap.typ` | `treap`, `treap-from` (+ `check-pairs`, `treap-insert`) | done |
+| `heap.typ` | `heap`, `heap-from`, `up-heap`, `down-heap` (+ `sift-up`, `sift-down` on the level-order array) | done |
 | `b-tree.typ` | own layout, since nodes hold several keys | todo |
 | `walkthrough.typ` | `walkthrough`, `step` | todo |
 
@@ -38,6 +39,13 @@ Keep the API and the code as simple as possible. No style knobs (`dx`, `r`, `fon
 - `avl-tree` only checks balance (as the spec says), not the BST order.
 - Rotations search the whole tree for `key` (binary trees have no order), so they also work on `binary-tree` input.
 - Errors are passed to `draw` as keys, so in a tree with duplicate keys every node with that key gets the colour.
+- Treap nodes keep the `(key, prio)` pair in the key slot of the long form. `normalize` only checks the shape; each public function checks the values. `key-of` gives the key of a value, so rotations, `bst-errors` and marking work on treaps unchanged.
+- Treaps have no leaf shorthand (as in the spec): a bare `(5, 3)` would be ambiguous with a broken node.
+- Treap priorities are compared with their parent only. A node is an error if it breaks the BST order (same rule as `bst`) or its priority belongs above its parent's. Equal priorities are fine, and insertion does not rotate on a tie.
+- In treap nodes the priority uses `colors.priority`, for now the same as the key text (a grey one was hard to read).
+- Heap errors use the same parent-only rule as treap priorities (`order-errors`). `heap` only checks the order, not the shape: a tree that is not complete is drawn as given without errors.
+- Heap indices are shown like balance factors (a note right of the node) in `colors.index`, for now the same as the marked colour. A node's index follows from its position (children of `i` at `2i + 1`, `2i + 2`), so it also works for trees that are not complete.
+- `up-heap`/`down-heap` work on the level-order array and rebuild the tree with `from-level-order`. `heap-from` drops duplicate keys, as the spec says, since the algorithms find nodes by key.
 
 ## Open spec questions (not decided yet)
 - `order` means `"min"`/`"max"` for heaps and treaps but the Knuth order (an int) for B-trees; consider renaming the B-tree one.
@@ -45,8 +53,8 @@ Keep the API and the code as simple as possible. No style knobs (`dx`, `r`, `fon
 - Typst limits how deep function calls can nest, which may matter for degenerate trees (e.g. `bst-from` with sorted keys: works for 60 keys, fails at 100).
 
 ## Tests
-Tytanic (`tt`) with Typst 0.15.1; see `tests/README.md`. Drawing tests are in `tests/<function>/<case>/test.typ`. Exact `assert`/`assert-panic` checks are in `tests/errors`, `tests/internal` and `tests/rotate`; they render blank pages, which is expected.
+Tytanic (`tt`) with Typst 0.15.1; see `tests/README.md`. Drawing tests are in `tests/<function>/<case>/test.typ`. Exact `assert`/`assert-panic` checks are in `tests/errors`, `tests/internal`, `tests/rotate` and `tests/heap-algorithms`; they render blank pages, which is expected.
 
 ## Next steps
-1. `treap`, `heap`, `b-tree`, `walkthrough`.
+1. `walkthrough`, `b-tree`.
 2. README Usage/Examples, delete `src/old_*.typ`.

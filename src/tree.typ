@@ -73,3 +73,43 @@
     from-level-order(keys, i: 2 * i + 2),
   )
 }
+
+// Level-order index of every node, as `(index, key)` pairs: the root has
+// index `i`, and the children of index `i` are at `2i + 1` and `2i + 2`.
+#let positions(tree, i: 0) = {
+  if tree == none { return () }
+  let (key, left, right) = tree
+  ((i, key),) + positions(left, i: 2 * i + 1) + positions(right, i: 2 * i + 2)
+}
+
+// The keys of a complete tree in level order (the inverse of
+// `from-level-order`), or `none` if the tree is not complete.
+#let to-level-order(tree) = {
+  let pairs = positions(tree).sorted(key: p => p.at(0))
+  // complete means the indices are exactly 0, 1, ..., n − 1
+  if pairs.enumerate().any(((j, (i, _))) => i != j) { return none }
+  pairs.map(p => p.at(1))
+}
+
+// Heap order, used by heaps (on the keys) and treaps (on the priorities).
+
+#let check-order(order) = assert(
+  order in ("min", "max"),
+  message: "sapling: order must be \"min\" or \"max\", got " + repr(order),
+)
+
+// Whether `a` belongs strictly above `b`: smaller in a min-heap, larger in a max-heap.
+#let above(a, b, order) = if order == "min" { a < b } else { a > b }
+
+// Keys of the nodes that break the heap order against their parent.
+// `by` maps a node's value to the compared value (a treap compares priorities).
+#let order-errors(tree, order, by: value => value, parent: none) = {
+  if tree == none { return () }
+  let (value, left, right) = tree
+  let v = by(value)
+  (
+    (if parent != none and above(v, parent, order) { (key-of(value),) } else { () })
+      + order-errors(left, order, by: by, parent: v)
+      + order-errors(right, order, by: by, parent: v)
+  )
+}
