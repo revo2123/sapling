@@ -7,7 +7,7 @@
 // root with 2 keys but 2 children: red root
 #b-tree(((20, 40), (5, 10), (25, 30)), 4)
 
-// leaf (10, 5) not ascending: red; (3, 9) is too big for the left of 8: red
+// leaf (10, 5) not ascending: red; (3, 9) has 3, too small for the right of 8: red
 #b-tree(((8,), (10, 5), (3, 9)), 4)
 
 // leaves on different levels: the shallow leaf (7) is red

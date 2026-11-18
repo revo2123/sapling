@@ -215,7 +215,7 @@ Generates a treap from the tree given. Does not have to be a valid treap, will m
 
 # B Tree
 ## b-tree-from
-Generates a B-Tree, as if the nodes were added to the tree in the given order.
+Generates a B-Tree, as if the nodes were added to the tree in the given order. Pages are drawn at full size, as in `b-tree`.
 ```typ
 #let b-tree-from(keys, order, marked: none)
 ```
@@ -230,7 +230,7 @@ Generates a B-Tree, as if the nodes were added to the tree in the given order.
 **Example:** `b-tree-from((1, 2, 3, 4), 3)`
 
 ## b-tree
-Generates a B-Tree with the structure given in `tree`, does not have to be a valid B-Tree. If `show-errors` is `true` mark incorrect nodes.
+Generates a B-Tree with the structure given in `tree`, does not have to be a valid B-Tree. If `show-errors` is `true` mark incorrect nodes. Every page is drawn at full size with `order − 1` cells; unused cells stay empty.
 ```typ
 #let b-tree(tree, order, marked: none, show-errors: true)
 ```
@@ -243,6 +243,8 @@ Generates a B-Tree with the structure given in `tree`, does not have to be a val
 - `tree` is `none` or `()`: draw only ∅
 - key in `marked` is not in `tree`: ignore marked key
 - inner page does not have exactly k+1 children for k keys: draw as given, mark the page if `show-errors` is `true`
+- page with more than `order − 1` keys: draw all its keys (wider than a full page), mark the page if `show-errors` is `true`
+- page without keys: draw `order − 1` empty cells
 
 **Example:** `b-tree(((20, 40), (5, 10), (25, 30), (45, 50)), 4, marked: (30,), show-errors: false)`
 

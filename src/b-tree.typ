@@ -108,12 +108,13 @@
 }
 
 // Places a page above its children, which are placed side by side. `w` is the width
-// of a cell. Returns the width of the subtree, the x of the page's centre, the placed
+// of a cell, `slots` the number of cells of a full page (order − 1). Returns the width of the subtree, the x of the page's centre, the placed
 // pages and the edges `(x-from, depth, x-to)`; all x are relative to the subtree's left edge.
-#let layout(page, depth, w) = {
+#let layout(page, depth, w, slots) = {
   let k = page.keys.len()
-  let width = calc.max(k, 1) * w
-  let subs = page.children.map(c => layout(c, depth + 1, w))
+  // every page is drawn at full size; an overfull page is as wide as its keys
+  let width = calc.max(k, slots) * w
+  let subs = page.children.map(c => layout(c, depth + 1, w, slots))
   if subs.len() == 0 {
     return (width: width, x: width / 2, pages: ((page: page, x: width / 2, depth: depth),), edges: ())
   }
@@ -140,7 +141,8 @@
   (width: right - left, x: x, pages: pages, edges: edges)
 }
 
-// Draws a B-tree exactly as given. A key in `marked` colours its cell; if
+// Draws a B-tree exactly as given. Every page has order − 1 cells, unused ones stay
+// empty. A key in `marked` colours its cell; if
 // `show-errors` is `true`, pages that break the B-tree rules are marked (this wins over `marked`).
 #let b-tree(tree, order, marked: none, show-errors: true) = {
   check-b-order(order)
@@ -156,7 +158,7 @@
   context {
     let c = palette()
     let w = calc.max(2 * radius, page-keys(tree).map(k => measure(shown(k)).width).fold(0pt, calc.max) + 2 * inset)
-    let l = layout(tree, 0, w)
+    let l = layout(tree, 0, w, order - 1)
     let max-depth = l.pages.map(p => p.depth).fold(0, calc.max)
     block(
       width: 2 * pad + l.width,
@@ -172,7 +174,8 @@
           ))
         }
         for p in l.pages {
-          let keys = if p.page.keys.len() == 0 { (none,) } else { p.page.keys }
+          // unused slots of the page are empty cells
+          let keys = p.page.keys + (none,) * calc.max(0, order - 1 - p.page.keys.len())
           let x0 = pad + p.x - keys.len() * w / 2
           for (i, key) in keys.enumerate() {
             let (stroke, fill) = style(c, error: show-errors and p.page.error, marked: key in marked)
