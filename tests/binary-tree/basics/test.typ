@@ -3,8 +3,6 @@
 
 // only ∅
 #binary-tree(none)
-
-// only ∅
 #binary-tree(())
 
 // one circle with 5
