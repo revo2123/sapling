@@ -1,7 +1,7 @@
 #set page(width: auto, height: auto, margin: 1em)
 #import "/src/lib.typ": *
 
-// default colours: 4 blue, 7 red (it is right of 3 but left of 5)
+// default colors: 4 blue, 7 red (it is right of 3 but left of 5)
 #bst((5, (3, none, (4, none, 7)), 9), marked: (4,))
 
 // content block: marked green, errors orange, borders and edges dark red
@@ -14,14 +14,14 @@
 )[
   #bst((5, (3, none, (4, none, 7)), 9), marked: (4,))
 
-  // nested: only the priority and index change, the colours above stay
+  // nested: only the priority and index change, the colors above stay
   #set-colors(priority: rgb("#7b1fa2"), index: rgb("#2e7d32"))[
     #treap(((5, 1), ((3, 2), none, none), none), marked: (3,))
     #heap-from((3, 1, 2), indices: 0)
   ]
 ]
 
-// after the blocks: default colours again
+// after the blocks: default colors again
 #bst((5, (3, none, (4, none, 7)), 9), marked: (4,))
 
 // show rule: everything after it in this scope

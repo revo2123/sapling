@@ -33,11 +33,11 @@
   )
 }
 
-// Draws a binary tree in long form. Keys in `marked` get the marked colour,
-// keys in `errors` the error colour (which wins over `marked`).
+// Draws a binary tree in long form. Keys in `marked` get the marked color,
+// keys in `errors` the error color (which wins over `marked`).
 // `note`, if given, maps a placed node (`n.tree` its subtree, `n.index` its
 // level-order index) to content shown right of the node, by default in the
-// marked colour.
+// marked color.
 // `label`, if given, maps a node's value to its content; the nodes are then
 // pills as wide as the widest label instead of circles.
 #let draw(tree, marked: (), errors: (), note: none, label: none) = {

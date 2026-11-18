@@ -1,4 +1,4 @@
-// Colour palette shared by all trees. `defaults` is the built-in palette;
+// Color palette shared by all trees. `defaults` is the built-in palette;
 // `set-colors` pushes a changed palette for the content it wraps; the one
 // in use is the last on the stack, read with `palette.get().last()` inside `context`.
 
@@ -23,21 +23,21 @@
 // The palette in use. Call inside `context`.
 #let palette() = stack.get().last()
 
-// Shows `body` with the named colours changed, the others stay as they are.
+// Shows `body` with the named colors changed, the others stay as they are.
 // Use it as `#show: set-colors.with(error: red)` or `#set-colors(error: red)[...]`.
 #let set-colors(body, ..colors) = {
   assert(
     colors.pos().len() == 0,
-    message: "sapling: set-colors takes only named colours, e.g. set-colors(error: red)",
+    message: "sapling: set-colors takes only named colors, e.g. set-colors(error: red)",
   )
   for (name, value) in colors.named() {
     assert(
       name in defaults,
-      message: "sapling: unknown colour " + repr(name) + ", expected one of " + defaults.keys().join(", "),
+      message: "sapling: unknown color " + repr(name) + ", expected one of " + defaults.keys().join(", "),
     )
     assert(
       type(value) == color,
-      message: "sapling: colour " + name + " must be a color, got " + repr(value),
+      message: "sapling: color " + name + " must be a color, got " + repr(value),
     )
   }
   stack.update(s => s + (s.last() + colors.named(),))

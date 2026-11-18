@@ -142,7 +142,7 @@
 }
 
 // Draws a B-tree exactly as given. Every page has order − 1 cells, unused ones stay
-// empty. A key in `marked` colours its cell; if
+// empty. A key in `marked` colors its cell; if
 // `show-errors` is `true`, pages that break the B-tree rules are marked (this wins over `marked`).
 #let b-tree(tree, order, marked: none, show-errors: true) = {
   check-b-order(order)

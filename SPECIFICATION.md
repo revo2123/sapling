@@ -1,18 +1,3 @@
-# Blueprint
-## function-name
-Description of what it does.
-```typ
-#let function-name(argument1, argument2, argument3: default)
-```
-- `argument1` (int, required): further description of the argument
-- `argument2` (string|int, required): further description of the argument
-- `argument3` (int, optional): further description of the argument 
-
-**Edge-Cases:**
-- `condition`: description
- 
-**Example:** `function-name(1, "abc")`
-
 # General Rules
 - Required arguments are positional, optional arguments are always named: `bst-from((1, 2, 3), marked: (3,))`.
 - Keys within one tree are either all `int` or all `string`. Mixing them is an error.
@@ -26,11 +11,11 @@ Description of what it does.
 
 # Colors
 ## set-colors
-Draws `body` with changed colours. The change is scoped: it only applies to the trees inside `body`, and nested calls build on each other. Colours not named keep the value of the surrounding scope (the defaults at the top). Only colours can be changed, nothing else about the drawing. Use it as a show rule to change the colours for the rest of the current scope (e.g. the whole document), or with a content block for a part of it.
+Draws `body` with changed colors. The change is scoped: it only applies to the trees inside `body`, and nested calls build on each other. Colors not named keep the value of the surrounding scope (the defaults at the top). Only colors can be changed, nothing else about the drawing. Use it as a show rule to change the colors for the rest of the current scope (e.g. the whole document), or with a content block for a part of it.
 ```typ
 #let set-colors(body, ..colors)
 ```
-- `body` (content, required): the content to draw with the changed colours; a show rule passes the rest of its scope here
+- `body` (content, required): the content to draw with the changed colors; a show rule passes the rest of its scope here
 - `border` (color, optional): outline of nodes and cells, and the edges
 - `fill` (color, optional): fill of normal nodes and cells
 - `marked` (color, optional): outline of nodes in `marked`, and the notes next to nodes (balance factors, array indices)
@@ -42,9 +27,9 @@ Draws `body` with changed colours. The change is scoped: it only applies to the 
 
 **Edge-Cases:**
 - an unknown name, a second positional argument or a value that is not a color: error
-- no colours given: `body` is drawn unchanged
+- no colors given: `body` is drawn unchanged
 - no `body` (called without a content block or show rule): error
-- when a node is both marked and an error, the error colour wins
+- when a node is both marked and an error, the error color wins
 
 **Example:** `set-colors(marked: green, error: orange)[#bst((5, 8, 3), marked: (3,))]`, or `#show: set-colors.with(marked: green)`
 
