@@ -21,7 +21,8 @@ Description of what it does.
 - Functions ending in `-from` (e.g. `bst-from`) insert the given keys one after another into an empty tree, so the tree is always valid, and draw it.
 - Functions without `-from` (e.g. `bst`) draw the tree exactly as given. Invalid nodes are marked if `show-errors` is `true`.
 - All drawing functions return content. The algorithms (rotations, `up-heap`, `down-heap`) take and return tree values, not content.
-- Keys are unique. Where a list of keys is inserted, the first occurrence is inserted and later duplicates are left out.
+- Limit for now: trees are processed recursively, and Typst limits how deeply function calls can nest (about 80 levels). A tree deeper than that fails with "maximum function call depth exceeded". This only affects degenerate trees, e.g. `bst-from` with 100 keys in sorted order; balanced trees (AVL, heaps, B-trees) are far below the limit.
+- Keys are unique. Where a list of keys is inserted, the first occurrence is inserted and later duplicates are left out. Functions that draw a given tree (e.g. `bst`) draw it exactly as given, so duplicate keys in it are drawn too.
 
 # Binary Trees
 ## binary-tree-from
@@ -49,7 +50,6 @@ Generates a binary tree from the tree given.
 
 **Edge-Cases:**
 - `tree` is `none` or `()`: draw only ∅
-- duplicate keys: ignore after first insertion
 - key in `marked` is not in `tree`: ignore marked key
 
 **Example:** `binary-tree((1, 2, (3, (4, 5, 6), 7)))`
@@ -82,20 +82,19 @@ Generates a binary tree from the tree given. Does not have to be a valid binary 
 
 **Edge-Cases:**
 - `tree` is `none` or `()`: draw only ∅
-- duplicate keys: ignore after first insertion
 - key in `marked` is not in `tree`: ignore marked key
 
 **Example:** `bst((1, 2, (3, (4, 5, 6), 7)))`
 
 # AVL Trees
 ## avl-tree-from
-Generates an AVL-Tree, as if the nodes were added to the tree in the given order. If `show-bf` is true, show balance factors of all nodes with `--`, `-`, `0`, `+`, `++`. `-` means left-heavy, `+` means right-heavy.
+Generates an AVL-Tree, as if the nodes were added to the tree in the given order. If `show-bf` is true, show balance factors of all nodes with `−−`, `−`, `0`, `+`, `++`. `−` means left-heavy, `+` means right-heavy.
 ```typ
 #let avl-tree-from(keys, marked: none, show-bf: true)
 ```
 - `keys` (none|int[]|string[], required): list of all keys that end up in the tree
 - `marked` (none|int[]|string[], optional): list of all keys whose nodes will be marked
-- `show-bf` (bool, optional): if `true` annotate all nodes with their balance factors using `--`, `-`, `0`, `+`, `++` and mark nodes with `--` or `++`, `false` ignore
+- `show-bf` (bool, optional): if `true` annotate all nodes with their balance factors using `−−`, `−`, `0`, `+`, `++` and mark nodes with `−−` or `++`, `false` ignore
 
 **Edge-Cases:**
 - `keys` is `none` or `()`: draw only ∅
@@ -105,17 +104,16 @@ Generates an AVL-Tree, as if the nodes were added to the tree in the given order
 **Example:** `avl-tree-from((1, 2, 3, 4), marked: (3, 4))`
 
 ## avl-tree
-Generates an AVL-Tree from the tree given. If `show-bf` is true, show balance factors of all nodes with `--`, `-`, `0`, `+`, `++`. `-` means left-heavy, `+` means right-heavy.
+Generates an AVL-Tree from the tree given. If `show-bf` is true, show balance factors of all nodes with `−−`, `−`, `0`, `+`, `++`. `−` means left-heavy, `+` means right-heavy.
 ```typ
 #let avl-tree(tree, marked: none, show-bf: true)
 ```
 - `tree` (tree, required): `none`, a key (leaf), or `(key, left, right)`, where `left` and `right` are trees
 - `marked` (none|int[]|string[], optional): list of all keys whose nodes will be marked (different color from `show-bf` markings)
-- `show-bf` (bool, optional): if `true` annotate all nodes with their balance factors using `--`, `-`, `0`, `+`, `++` and mark nodes with `--` or `++`, `false` ignore
+- `show-bf` (bool, optional): if `true` annotate all nodes with their balance factors using `−−`, `−`, `0`, `+`, `++` and mark nodes with `−−` or `++`, `false` ignore
 
 **Edge-Cases:**
 - `tree` is `none` or `()`: draw only ∅
-- duplicate keys: ignore after first insertion
 - key in `marked` is not in `tree`: ignore marked key
 
 **Example:** `avl-tree((1, 2, (3, (4, 5, 6), 7)))`
