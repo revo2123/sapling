@@ -70,3 +70,17 @@
 #assert-panic(() => up-heap((1, 2, 3), "a"))
 #assert-panic(() => up-heap((1, 2, 3), 2, order: "foo"))
 #assert-panic(() => down-heap((1, 2), 1))
+
+// b-tree, b-tree-from
+#assert-panic(() => b-tree((1, 2), 2))
+#assert-panic(() => b-tree((1, 2), "3"))
+#assert-panic(() => b-tree-from((1, 2), 1))
+#assert-panic(() => b-tree(5, 3))
+#assert-panic(() => b-tree(((5,), none, (7,)), 3))
+#assert-panic(() => b-tree(((5,), (), (7,)), 3))
+#assert-panic(() => b-tree((1, "a"), 3))
+#assert-panic(() => b-tree((1, 2.5), 3))
+#assert-panic(() => b-tree((1, 2), 3, marked: ("a",)))
+#assert-panic(() => b-tree((1, 2), 3, show-errors: "yes"))
+#assert-panic(() => b-tree-from(5, 3))
+#assert-panic(() => b-tree-from((1, "a"), 3))
