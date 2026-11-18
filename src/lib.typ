@@ -7,3 +7,4 @@
 #import "treap.typ": treap, treap-from
 #import "heap.typ": down-heap, heap, heap-from, up-heap
 #import "b-tree.typ": b-tree, b-tree-from
+#import "walkthrough.typ": step, walkthrough

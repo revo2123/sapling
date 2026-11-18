@@ -84,3 +84,10 @@
 #assert-panic(() => b-tree((1, 2), 3, show-errors: "yes"))
 #assert-panic(() => b-tree-from(5, 3))
 #assert-panic(() => b-tree-from((1, "a"), 3))
+
+// walkthrough, step
+#assert-panic(() => walkthrough(columns: 0))
+#assert-panic(() => walkthrough(columns: "2"))
+#assert-panic(() => walkthrough(arrows: 1))
+#assert-panic(() => walkthrough(gutter: 5))
+#assert-panic(() => step(5, [x]))
