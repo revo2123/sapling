@@ -4,7 +4,7 @@
 #import "tree.typ": above, as-list, check-bool, check-keys, check-order, keys, normalize, order-errors
 #import "binary.typ": bst-errors
 #import "rotate.typ"
-#import "colors.typ": colors
+#import "colors.typ": palette
 #import "draw.typ": draw
 
 // Checks the `(key, prio)` pairs and `marked`: keys as usual, priorities all
@@ -63,7 +63,7 @@
     bst-errors(tree) + order-errors(tree, order, by: pair => pair.at(1))
   } else { () }
   let label(((key, prio))) = {
-    let pair = [#key,#text(fill: colors.priority)[#prio]]
+    let pair = [#key,#text(fill: palette().priority)[#prio]]
     if parens [(#pair)] else { pair }
   }
   draw(tree, marked: marked, errors: errors, label: label)

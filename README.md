@@ -63,6 +63,18 @@ A single key needs a trailing comma: `(4,)`.
 #treap-from(((5, 3), (2, 8)), parens: true) // write nodes as (key,prio)
 ```
 
+### Change the colors
+`set-colors` changes the colours of the trees inside a content block. Colours you do not name stay as they are.
+```typ
+#set-colors(marked: green, error: orange)[
+  #bst((5, 8, 3), marked: (3,))
+]
+```
+As a show rule it changes the colours for the rest of the document (or of the current scope):
+```typ
+#show: set-colors.with(marked: green)
+```
+
 ## Algorithms
 Algorithms take a tree and a key and return a new tree, which you can draw with the function of the tree type.
 ```typ

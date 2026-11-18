@@ -1,6 +1,8 @@
-// Colour palette shared by all trees.
+// Colour palette shared by all trees. `defaults` is the built-in palette;
+// `set-colors` pushes a changed palette for the content it wraps; the one
+// in use is the last on the stack, read with `palette.get().last()` inside `context`.
 
-#let colors = (
+#let defaults = (
   border: rgb("#1a2b4c"),
   fill: rgb("#f4f7f9"),
   // nodes the user passed in `marked`
@@ -15,13 +17,41 @@
   index: rgb("#1f6fb2"),
 )
 
-// Stroke and fill of a node or cell: errors win over marked nodes.
-#let style(error: false, marked: false) = {
+// Stack of palettes: `set-colors` pushes one before its content and pops it after.
+#let stack = state("sapling-colors", (defaults,))
+
+// The palette in use. Call inside `context`.
+#let palette() = stack.get().last()
+
+// Shows `body` with the named colours changed, the others stay as they are.
+// Use it as `#show: set-colors.with(error: red)` or `#set-colors(error: red)[...]`.
+#let set-colors(body, ..colors) = {
+  assert(
+    colors.pos().len() == 0,
+    message: "sapling: set-colors takes only named colours, e.g. set-colors(error: red)",
+  )
+  for (name, value) in colors.named() {
+    assert(
+      name in defaults,
+      message: "sapling: unknown colour " + repr(name) + ", expected one of " + defaults.keys().join(", "),
+    )
+    assert(
+      type(value) == color,
+      message: "sapling: colour " + name + " must be a color, got " + repr(value),
+    )
+  }
+  stack.update(s => s + (s.last() + colors.named(),))
+  body
+  stack.update(s => s.slice(0, -1))
+}
+
+// Stroke and fill of a node or cell in palette `c`: errors win over marked nodes.
+#let style(c, error: false, marked: false) = {
   if error {
-    (1.3pt + colors.error, colors.error-fill)
+    (1.3pt + c.error, c.error-fill)
   } else if marked {
-    (1.3pt + colors.marked, colors.marked-fill)
+    (1.3pt + c.marked, c.marked-fill)
   } else {
-    (0.7pt + colors.border, colors.fill)
+    (0.7pt + c.border, c.fill)
   }
 }

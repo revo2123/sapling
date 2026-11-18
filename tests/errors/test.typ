@@ -91,3 +91,9 @@
 #assert-panic(() => walkthrough(arrows: 1))
 #assert-panic(() => walkthrough(gutter: 5))
 #assert-panic(() => step(5, [x]))
+
+// set-colors: needs content, only named colours, known names, colour values
+#assert-panic(() => set-colors(error: red))
+#assert-panic(() => set-colors(red)[x])
+#assert-panic(() => set-colors(foo: red)[x])
+#assert-panic(() => set-colors(error: "red")[x])

@@ -5,7 +5,7 @@
 // without children (`((5,),)`) is possible, so `leaf` is not just `children == ()`.
 
 #import "tree.typ": as-list, check-bool, check-keys
-#import "colors.typ": colors, style
+#import "colors.typ": palette, style
 #import "draw.typ": dy, font-size, gap, inset, pad, radius
 
 #let check-b-order(order) = assert(
@@ -154,6 +154,7 @@
   let shown(key) = text(size: font-size)[#key]
 
   context {
+    let c = palette()
     let w = calc.max(2 * radius, page-keys(tree).map(k => measure(shown(k)).width).fold(0pt, calc.max) + 2 * inset)
     let l = layout(tree, 0, w)
     let max-depth = l.pages.map(p => p.depth).fold(0, calc.max)
@@ -167,14 +168,14 @@
           place(top + left, line(
             start: (pad + x0, pad + 2 * radius + depth * dy),
             end: (pad + x1, pad + (depth + 1) * dy),
-            stroke: 0.6pt + colors.border,
+            stroke: 0.6pt + c.border,
           ))
         }
         for p in l.pages {
           let keys = if p.page.keys.len() == 0 { (none,) } else { p.page.keys }
           let x0 = pad + p.x - keys.len() * w / 2
           for (i, key) in keys.enumerate() {
-            let (stroke, fill) = style(error: show-errors and p.page.error, marked: key in marked)
+            let (stroke, fill) = style(c, error: show-errors and p.page.error, marked: key in marked)
             place(top + left, dx: x0 + i * w, dy: pad + p.depth * dy, rect(
               width: w,
               height: 2 * radius,

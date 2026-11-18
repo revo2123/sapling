@@ -24,6 +24,30 @@ Description of what it does.
 - Limit for now: trees are processed recursively, and Typst limits how deeply function calls can nest (about 80 levels). A tree deeper than that fails with "maximum function call depth exceeded". This only affects degenerate trees, e.g. `bst-from` with 100 keys in sorted order; balanced trees (AVL, heaps, B-trees) are far below the limit.
 - Keys are unique. Where a list of keys is inserted, the first occurrence is inserted and later duplicates are left out. Functions that draw a given tree (e.g. `bst`) draw it exactly as given, so duplicate keys in it are drawn too.
 
+# Colors
+## set-colors
+Draws `body` with changed colours. The change is scoped: it only applies to the trees inside `body`, and nested calls build on each other. Colours not named keep the value of the surrounding scope (the defaults at the top). Only colours can be changed, nothing else about the drawing. Use it as a show rule to change the colours for the rest of the current scope (e.g. the whole document), or with a content block for a part of it.
+```typ
+#let set-colors(body, ..colors)
+```
+- `body` (content, required): the content to draw with the changed colours; a show rule passes the rest of its scope here
+- `border` (color, optional): outline of nodes and cells, and the edges
+- `fill` (color, optional): fill of normal nodes and cells
+- `marked` (color, optional): outline of nodes in `marked`, and the notes next to nodes (balance factors, array indices)
+- `marked-fill` (color, optional): fill of nodes in `marked`
+- `error` (color, optional): outline of nodes that break the rules of their tree (`show-errors`, `show-bf`)
+- `error-fill` (color, optional): fill of those nodes
+- `priority` (color, optional): the priority in treap nodes
+- `index` (color, optional): the array indices of heap nodes (`indices`)
+
+**Edge-Cases:**
+- an unknown name, a second positional argument or a value that is not a color: error
+- no colours given: `body` is drawn unchanged
+- no `body` (called without a content block or show rule): error
+- when a node is both marked and an error, the error colour wins
+
+**Example:** `set-colors(marked: green, error: orange)[#bst((5, 8, 3), marked: (3,))]`, or `#show: set-colors.with(marked: green)`
+
 # Binary Trees
 ## binary-tree-from
 Generates a binary tree, as if the nodes were added to the tree in the given order.

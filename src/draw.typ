@@ -1,6 +1,6 @@
 // Drawing of binary-shaped trees (binary trees, BSTs, AVL trees, heaps, treaps).
 
-#import "colors.typ": colors, style
+#import "colors.typ": palette, style
 #import "tree.typ": key-of
 
 #let radius = 0.3cm // node radius (half the height of a pill)
@@ -49,6 +49,7 @@
   let shown(n) = text(size: font-size, if label == none [#n.key] else { label(n.key) })
 
   context {
+    let c = palette()
     let width = if label == none { 2 * radius } else {
       calc.max(..l.nodes.map(n => measure(shown(n)).width)) + 2 * inset
     }
@@ -64,10 +65,10 @@
       {
         // edges first, so the nodes cover their ends
         for (from, to) in l.edges {
-          place(top + left, line(start: pos(from), end: pos(to), stroke: 0.6pt + colors.border))
+          place(top + left, line(start: pos(from), end: pos(to), stroke: 0.6pt + c.border))
         }
         for n in l.nodes {
-          let (stroke, fill) = style(error: key-of(n.key) in errors, marked: key-of(n.key) in marked)
+          let (stroke, fill) = style(c, error: key-of(n.key) in errors, marked: key-of(n.key) in marked)
           let body = align(center + horizon, shown(n))
           let (x, y) = pos((n.x, n.depth))
           place(top + left, dx: x - width / 2, dy: y - radius, if label == none {
@@ -77,7 +78,7 @@
           })
           if note != none {
             // vertically centred: the edges leave the node diagonally
-            place(top + left, dx: x + width / 2 + 1.5pt, dy: y - 5pt, text(size: 8pt, fill: colors.marked)[#note(n)])
+            place(top + left, dx: x + width / 2 + 1.5pt, dy: y - 5pt, text(size: 8pt, fill: c.marked)[#note(n)])
           }
         }
       },

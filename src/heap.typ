@@ -5,7 +5,7 @@
   above, as-list, check-bool, check-keys, check-order, from-level-order, keys, normalize, order-errors,
   to-level-order,
 )
-#import "colors.typ": colors
+#import "colors.typ": palette
 #import "draw.typ": draw
 
 // Swaps the keys at index `i` and its parent while `i` belongs above its parent.
@@ -65,7 +65,7 @@
     tree,
     marked: marked,
     errors: if show-errors { order-errors(tree, order) } else { () },
-    note: if indices != none { n => text(fill: colors.index)[#(n.index + indices)] },
+    note: if indices != none { n => text(fill: palette().index)[#(n.index + indices)] },
   )
 }
 
