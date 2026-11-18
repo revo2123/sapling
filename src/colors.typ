@@ -14,3 +14,14 @@
   // array indices next to heap nodes (same as the balance factors for now)
   index: rgb("#1f6fb2"),
 )
+
+// Stroke and fill of a node or cell: errors win over marked nodes.
+#let style(error: false, marked: false) = {
+  if error {
+    (1.3pt + colors.error, colors.error-fill)
+  } else if marked {
+    (1.3pt + colors.marked, colors.marked-fill)
+  } else {
+    (0.7pt + colors.border, colors.fill)
+  }
+}

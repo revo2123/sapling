@@ -1,7 +1,7 @@
 // Treaps: binary search trees by key whose priorities follow heap order.
 // In long form a node's key slot holds the pair: `((key, prio), left, right)`.
 
-#import "tree.typ": above, as-list, check-keys, check-order, keys, normalize, order-errors
+#import "tree.typ": above, as-list, check-bool, check-keys, check-order, keys, normalize, order-errors
 #import "binary.typ": bst-errors
 #import "rotate.typ"
 #import "colors.typ": colors
@@ -54,11 +54,8 @@
 // priorities are marked.
 #let treap(tree, order: "min", marked: none, show-errors: true, parens: false) = {
   check-order(order)
-  assert(
-    type(show-errors) == bool,
-    message: "sapling: show-errors must be true or false, got " + repr(show-errors),
-  )
-  assert(type(parens) == bool, message: "sapling: parens must be true or false, got " + repr(parens))
+  check-bool(show-errors, "show-errors")
+  check-bool(parens, "parens")
   let tree = normalize(tree)
   let marked = as-list(marked, "marked")
   check-pairs(keys(tree), marked: marked)

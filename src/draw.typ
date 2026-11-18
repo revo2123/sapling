@@ -1,6 +1,6 @@
 // Drawing of binary-shaped trees (binary trees, BSTs, AVL trees, heaps, treaps).
 
-#import "colors.typ": colors
+#import "colors.typ": colors, style
 #import "tree.typ": key-of
 
 #let radius = 0.3cm // node radius (half the height of a pill)
@@ -67,13 +67,7 @@
           place(top + left, line(start: pos(from), end: pos(to), stroke: 0.6pt + colors.border))
         }
         for n in l.nodes {
-          let (stroke, fill) = if key-of(n.key) in errors {
-            (1.3pt + colors.error, colors.error-fill)
-          } else if key-of(n.key) in marked {
-            (1.3pt + colors.marked, colors.marked-fill)
-          } else {
-            (0.7pt + colors.border, colors.fill)
-          }
+          let (stroke, fill) = style(error: key-of(n.key) in errors, marked: key-of(n.key) in marked)
           let body = align(center + horizon, shown(n))
           let (x, y) = pos((n.x, n.depth))
           place(top + left, dx: x - width / 2, dy: y - radius, if label == none {

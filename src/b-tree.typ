@@ -4,8 +4,8 @@
 // Internally every page is `(keys: (...), children: (...), leaf: bool)`. An inner page
 // without children (`((5,),)`) is possible, so `leaf` is not just `children == ()`.
 
-#import "tree.typ": as-list, check-keys
-#import "colors.typ": colors
+#import "tree.typ": as-list, check-bool, check-keys
+#import "colors.typ": colors, style
 #import "draw.typ": dy, font-size, gap, inset, pad, radius
 
 #let check-b-order(order) = assert(
@@ -144,10 +144,7 @@
 // `show-errors` is `true`, pages that break the B-tree rules are marked (this wins over `marked`).
 #let b-tree(tree, order, marked: none, show-errors: true) = {
   check-b-order(order)
-  assert(
-    type(show-errors) == bool,
-    message: "sapling: show-errors must be true or false, got " + repr(show-errors),
-  )
+  check-bool(show-errors, "show-errors")
   let tree = normalize-b(tree)
   let marked = as-list(marked, "marked")
   check-keys((if tree == none { () } else { page-keys(tree) }) + marked)
@@ -177,13 +174,7 @@
           let keys = if p.page.keys.len() == 0 { (none,) } else { p.page.keys }
           let x0 = pad + p.x - keys.len() * w / 2
           for (i, key) in keys.enumerate() {
-            let (stroke, fill) = if show-errors and p.page.error {
-              (1.3pt + colors.error, colors.error-fill)
-            } else if key in marked {
-              (1.3pt + colors.marked, colors.marked-fill)
-            } else {
-              (0.7pt + colors.border, colors.fill)
-            }
+            let (stroke, fill) = style(error: show-errors and p.page.error, marked: key in marked)
             place(top + left, dx: x0 + i * w, dy: pad + p.depth * dy, rect(
               width: w,
               height: 2 * radius,

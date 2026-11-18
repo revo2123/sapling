@@ -23,7 +23,7 @@ Run these anywhere inside the project.
 
 ## Structure
 
-Every folder with a `test.typ` is one test, and its path is the test's name. `tests/template.typ`.
+Every folder with a `test.typ` is one test, and its path is the test's name.
 Commit `test.typ` and `ref/`. Tytanic generates `out/` and `diff/` and ignores them in git automatically.
 
 ## When a test fails

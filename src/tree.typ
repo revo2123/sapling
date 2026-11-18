@@ -17,6 +17,12 @@
   )
 }
 
+// Checks that a flag argument (`show-errors`, `show-bf`, `parens`) is a bool.
+#let check-bool(value, name) = assert(
+  type(value) == bool,
+  message: "sapling: " + name + " must be true or false, got " + repr(value),
+)
+
 // Turns an optional list argument (`keys`, `marked`) into an array.
 // `name` is the argument's name, used in the error message.
 #let as-list(value, name) = {

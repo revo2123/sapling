@@ -1,6 +1,6 @@
 // AVL trees: binary search trees annotated with balance factors.
 
-#import "tree.typ": as-list, check-keys, height, keys, normalize
+#import "tree.typ": as-list, check-bool, check-keys, height, keys, normalize
 #import "rotate.typ"
 #import "draw.typ": draw
 
@@ -52,10 +52,7 @@
 // Draws an AVL tree exactly as given. If `show-bf` is `true`, every node shows
 // its balance factor and nodes with −− or ++ are marked.
 #let avl-tree(tree, marked: none, show-bf: true) = {
-  assert(
-    type(show-bf) == bool,
-    message: "sapling: show-bf must be true or false, got " + repr(show-bf),
-  )
+  check-bool(show-bf, "show-bf")
   let tree = normalize(tree)
   let marked = as-list(marked, "marked")
   check-keys(keys(tree) + marked)

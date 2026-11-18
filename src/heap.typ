@@ -2,7 +2,7 @@
 // level-order array, where index `i` has its parent at `(i − 1) / 2`.
 
 #import "tree.typ": (
-  above, as-list, check-keys, check-order, from-level-order, keys, normalize, order-errors,
+  above, as-list, check-bool, check-keys, check-order, from-level-order, keys, normalize, order-errors,
   to-level-order,
 )
 #import "colors.typ": colors
@@ -53,10 +53,7 @@
 // node shows its array index, starting at that number.
 #let heap(tree, order: "min", marked: none, show-errors: true, indices: none) = {
   check-order(order)
-  assert(
-    type(show-errors) == bool,
-    message: "sapling: show-errors must be true or false, got " + repr(show-errors),
-  )
+  check-bool(show-errors, "show-errors")
   assert(
     indices == none or (type(indices) == int and indices in (0, 1)),
     message: "sapling: indices must be none, 0 or 1, got " + repr(indices),

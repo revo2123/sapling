@@ -1,6 +1,6 @@
 // Binary trees and binary search trees.
 
-#import "tree.typ": as-list, check-keys, from-level-order, key-of, keys, normalize
+#import "tree.typ": as-list, check-bool, check-keys, from-level-order, key-of, keys, normalize
 #import "draw.typ": draw
 
 // Draws a binary tree exactly as given.
@@ -54,10 +54,7 @@
 // Draws a binary search tree exactly as given. If `show-errors` is `true`,
 // nodes that break the BST rule are marked.
 #let bst(tree, marked: none, show-errors: true) = {
-  assert(
-    type(show-errors) == bool,
-    message: "sapling: show-errors must be true or false, got " + repr(show-errors),
-  )
+  check-bool(show-errors, "show-errors")
   let tree = normalize(tree)
   let marked = as-list(marked, "marked")
   check-keys(keys(tree) + marked)
